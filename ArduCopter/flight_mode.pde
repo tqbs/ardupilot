@@ -94,6 +94,9 @@ static bool set_mode(uint8_t mode)
             success = poshold_init(ignore_checks);
             break;
 #endif
+        case DRIVE:
+            success = drive_init(ignore_checks);
+            break; 
 
         default:
             success = false;
@@ -200,6 +203,11 @@ static void update_flight_mode()
             poshold_run();
             break;
 #endif
+
+        case DRIVE:
+            drive_run();
+            break; 
+
     }
 }
 
@@ -269,8 +277,9 @@ static bool manual_flight_mode(uint8_t mode) {
 
 // mode_allows_arming - returns true if vehicle can be armed in the specified mode
 //  arming_from_gcs should be set to true if the arming request comes from the ground station
+// added drive 
 static bool mode_allows_arming(uint8_t mode, bool arming_from_gcs) {
-    if (manual_flight_mode(mode) || mode == LOITER || mode == ALT_HOLD || mode == POSHOLD || (arming_from_gcs && mode == GUIDED)) {
+    if (manual_flight_mode(mode) || mode == LOITER || mode == ALT_HOLD || mode == POSHOLD || mode == DRIVE || (arming_from_gcs && mode == GUIDED )) {
         return true;
     }
     return false;
@@ -328,6 +337,10 @@ print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
     case POSHOLD:
         port->print_P(PSTR("POSHOLD"));
         break;
+    case DRIVE:
+        port->print_P(PSTR("DRIVE"));
+        break; 
+
     default:
         port->printf_P(PSTR("Mode(%u)"), (unsigned)mode);
         break;
